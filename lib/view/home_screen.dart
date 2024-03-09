@@ -12,6 +12,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //adding necessary variables
   String lastValue = "X";
+  bool gameOver = false;
+  int turn = 0;
 
   Game game = Game();
 
@@ -52,13 +54,64 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSpacing: 8.0,
               crossAxisSpacing: 8.0,
               children: List.generate(Game.boardLength, (index) {
-                return Container(
-                  width: Game.blocSize,
-                  height: Game.blocSize,
-                  decoration: BoxDecoration(color: MainColor.secondaryColor),
+                return InkWell(
+                  onTap: gameOver
+                      ? null
+                      : () {
+                          if (game.board![index] ==
+                              " ") //if "X" each time click can replace the values
+                          {
+                            setState(() {
+                              game.board![index] = lastValue;
+                              if (lastValue == "X")
+                                lastValue = "O";
+                              else
+                                lastValue = "X";
+                            });
+                          }
+                        },
+                  child: Container(
+                    width: Game.blocSize,
+                    height: Game.blocSize,
+                    decoration: BoxDecoration(
+                      color: MainColor.secondaryColor,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Center(
+                      child: Text(
+                        game.board![index],
+                        style: TextStyle(
+                          color: game.board![index] == "X"
+                              ? Colors.blue
+                              : Colors.red,
+                          fontSize: 64.0,
+                        ),
+                      ),
+                    ),
+                  ),
                 );
               }),
             ),
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          ElevatedButton.icon(
+            label: Text("Repeat the game"),
+            onPressed: () {
+              setState(() {
+                //erase the board
+                game.board = Game.initGameBoard();
+              });
+            },
+            icon: Icon(
+              Icons.replay,
+              size: 30,
+              color: MainColor.accentColor,
+            ),
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStatePropertyAll(MainColor.secondaryColor)),
           )
         ],
       ),
