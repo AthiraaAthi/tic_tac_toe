@@ -13,7 +13,18 @@ class _HomeScreenState extends State<HomeScreen> {
   //adding necessary variables
   String lastValue = "X";
   bool gameOver = false;
-  int turn = 0;
+  List<int> scoreboard = [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ]; //this score are for the different combination of the games'[row1,2,3]
+  int turn = 0; //to check the draw
+  String result = "";
 
   Game game = Game();
 
@@ -59,10 +70,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? null
                       : () {
                           if (game.board![index] ==
-                              " ") //if "X" each time click can replace the values
+                              "") //if "X" each time click can replace the values
                           {
                             setState(() {
                               game.board![index] = lastValue;
+                              turn++; /////////////////
+                              gameOver = game.winnerCheck(
+                                  lastValue, index, scoreboard, 3); //////
+                              if (gameOver) {
+                                result = "$lastValue is the winner";
+                              } else if (!gameOver && turn == 9) {
+                                result = "Its a Draw!";
+                                gameOver = true;
+                              }
+
                               if (lastValue == "X")
                                 lastValue = "O";
                               else
@@ -96,12 +117,21 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             height: 30,
           ),
+          Text(
+            result,
+            style: TextStyle(color: Colors.white, fontSize: 54),
+          ), //////
           ElevatedButton.icon(
             label: Text("Repeat the game"),
             onPressed: () {
               setState(() {
                 //erase the board
                 game.board = Game.initGameBoard();
+                lastValue = "X";
+                gameOver = false;
+                turn = 0; ///////
+                result = "";
+                scoreboard = [0, 0, 0, 0, 0, 0, 0, 0];
               });
             },
             icon: Icon(
